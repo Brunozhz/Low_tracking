@@ -1,0 +1,53 @@
+﻿import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
+
+export const env = createEnv({
+  server: {
+    NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+    DATABASE_URL: z.string().url(),
+    NEXTAUTH_SECRET: z.string().min(32),
+    NEXTAUTH_URL: z.string().url().default("http://localhost:3000"),
+    REDIS_URL: z.string().url(),
+    TRACKING_SALT: z.string().min(16),
+    ENCRYPTION_KEY: z.string().min(32),
+    WEBHOOK_SIGNING_SECRET: z.string().min(16).optional(),
+    OPENAI_API_KEY: z.string().optional(),
+    OPENAI_MODEL: z.string().default("gpt-5-mini"),
+    META_APP_ID: z.string().optional(),
+    META_APP_SECRET: z.string().optional(),
+    META_REDIRECT_URI: z.string().url().optional(),
+    META_GRAPH_VERSION: z.string().default("v22.0"),
+    TRACKING_MODE: z.enum(["full", "redirect_only"]).default("full"),
+    DEV_HARDCODE_USER_EMAIL: z.string().email().optional(),
+    DEV_HARDCODE_USER_PASSWORD: z.string().min(1).optional(),
+    DEV_HARDCODE_USER_NAME: z.string().min(1).optional(),
+  },
+  client: {
+    NEXT_PUBLIC_APP_NAME: z.string().default("Low Tracking"),
+    NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
+  },
+  runtimeEnv: {
+    NODE_ENV: process.env.NODE_ENV,
+    DATABASE_URL: process.env.DATABASE_URL,
+    NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+    NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    REDIS_URL: process.env.REDIS_URL,
+    TRACKING_SALT: process.env.TRACKING_SALT,
+    ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
+    WEBHOOK_SIGNING_SECRET: process.env.WEBHOOK_SIGNING_SECRET,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    OPENAI_MODEL: process.env.OPENAI_MODEL,
+    META_APP_ID: process.env.META_APP_ID,
+    META_APP_SECRET: process.env.META_APP_SECRET,
+    META_REDIRECT_URI: process.env.META_REDIRECT_URI,
+    META_GRAPH_VERSION: process.env.META_GRAPH_VERSION,
+    TRACKING_MODE: process.env.TRACKING_MODE,
+    DEV_HARDCODE_USER_EMAIL: process.env.DEV_HARDCODE_USER_EMAIL,
+    DEV_HARDCODE_USER_PASSWORD: process.env.DEV_HARDCODE_USER_PASSWORD,
+    DEV_HARDCODE_USER_NAME: process.env.DEV_HARDCODE_USER_NAME,
+    NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+  },
+  emptyStringAsUndefined: true,
+});
+
