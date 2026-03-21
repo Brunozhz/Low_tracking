@@ -24,7 +24,7 @@ ARG DEV_HARDCODE_USER_NAME
 
 COPY package*.json ./
 COPY prisma ./prisma
-RUN npm ci
+RUN npm ci --include=dev
 
 ENV NODE_ENV=$NODE_ENV \
     DATABASE_URL=$DATABASE_URL \
@@ -52,3 +52,4 @@ RUN npm run build
 
 EXPOSE 3000
 CMD ["npm", "run", "start"]
+
