@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
@@ -7,7 +7,8 @@ import { authOptions } from "@/lib/auth";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/optimizations", label: "Otimizações" },
+  { href: "/links", label: "Links" },
+  { href: "/optimizations", label: "Otimizacoes" },
 ];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
@@ -39,3 +40,4 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     </div>
   );
 }
+
