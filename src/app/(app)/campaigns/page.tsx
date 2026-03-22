@@ -1,12 +1,12 @@
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { MetaIntegrationPanel } from "@/components/dashboard/meta-integration-panel";
+import { CampaignsWorkbench } from "@/components/campaigns/campaigns-workbench";
 import { Card } from "@/components/ui/card";
 import { getPrimaryProjectForUser } from "@/lib/access";
 import { authOptions } from "@/lib/auth";
 
-export default async function IntegrationsPage() {
+export default async function CampaignsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -19,11 +19,10 @@ export default async function IntegrationsPage() {
     return (
       <Card>
         <h2 className="text-xl font-semibold">Sem projeto ativo</h2>
-        <p className="mt-2 text-sm text-zinc-400">Crie um projeto na tela de Links antes de conectar a Meta.</p>
+        <p className="mt-2 text-sm text-zinc-400">Crie um projeto primeiro para visualizar campanhas e automacoes.</p>
       </Card>
     );
   }
 
-  return <MetaIntegrationPanel projectId={project.id} projectName={project.name} workspaceId={project.workspaceId} />;
+  return <CampaignsWorkbench projectId={project.id} projectName={project.name} />;
 }
-

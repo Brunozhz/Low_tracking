@@ -169,6 +169,19 @@ enum OptimizationActionType {
   COMMENT
 }
 
+enum CampaignOptimizationScope {
+  ALL_ACTIVE
+  SELECTED
+}
+
+enum CampaignOptimizationPreset {
+  BALANCED
+  AGGRESSIVE
+  DEFENSIVE
+  CREATIVE_RESCUE
+  ROAS_GUARD
+}
+
 model User {
   id            String    @id @default(cuid())
   name          String?
@@ -192,6 +205,7 @@ model User {
   apiKeysCreated      ApiKey[]             @relation("ApiKeyCreator")
   auditLogs           AuditLog[]
   optimizationActions OptimizationAction[]
+  campaignAutomations CampaignOptimizationAutomation[] @relation("CampaignAutomationCreator")
 }
 
 model Account {
@@ -291,6 +305,7 @@ model Workspace {
   recommendations     Recommendation[]
   alerts              Alert[]
   optimizationActions OptimizationAction[]
+  campaignAutomations CampaignOptimizationAutomation[]
   syncLogs            SyncLog[]
   webhooks            WebhookDelivery[]
 
@@ -348,6 +363,7 @@ model Project {
   recommendations     Recommendation[]
   alerts              Alert[]
   optimizationActions OptimizationAction[]
+  campaignAutomations CampaignOptimizationAutomation[]
   syncLogs            SyncLog[]
   webhooks            WebhookDelivery[]
   auditLogs           AuditLog[]
@@ -940,6 +956,39 @@ model OptimizationAction {
   @@index([recommendationId, createdAt])
 }
 
+model CampaignOptimizationAutomation {
+  id                       String                     @id @default(cuid())
+  workspaceId              String
+  projectId                String
+  createdById              String?
+  name                     String
+  enabled                  Boolean                    @default(true)
+  timezone                 String                     @default("America/Sao_Paulo")
+  runTimes                 String[]
+  scope                    CampaignOptimizationScope  @default(ALL_ACTIVE)
+  selectedCampaignIds      String[]
+  preset                   CampaignOptimizationPreset @default(BALANCED)
+  minSpend                 Decimal?                   @db.Decimal(14, 2)
+  targetRoas               Float?
+  maxCpa                   Decimal?                   @db.Decimal(14, 2)
+  maxBudgetIncreasePercent Int                        @default(20)
+  maxBudgetDecreasePercent Int                        @default(20)
+  pauseLosers              Boolean                    @default(true)
+  scaleWinners             Boolean                    @default(true)
+  refreshCreativeAlerts    Boolean                    @default(true)
+  trackingConsistencyCheck Boolean                    @default(true)
+  lastRunAt                DateTime?
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy User?     @relation("CampaignAutomationCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([projectId, enabled, updatedAt])
+  @@index([workspaceId, createdAt])
+}
+
 model SyncLog {
   id             String     @id @default(cuid())
   workspaceId    String
@@ -1048,3 +1097,5 @@ model AuditLog {
   @@index([projectId, createdAt])
   @@index([userId, createdAt])
 }
+
+

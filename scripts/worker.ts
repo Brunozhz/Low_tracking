@@ -1,4 +1,4 @@
-﻿import "dotenv/config";
+import "dotenv/config";
 
 import { Worker } from "bullmq";
 import { subDays } from "date-fns";
@@ -6,6 +6,7 @@ import { InsightType } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 
 import { evaluateCampaignSnapshot } from "../src/lib/ai/rules";
+import { runDueCampaignAutomations } from "../src/lib/automation/campaign-automation";
 import { buildExecutiveSummary } from "../src/lib/ai/summarizer";
 import { JOB_NAMES } from "../src/lib/constants";
 import { db } from "../src/lib/db";
@@ -196,7 +197,7 @@ const insightsWorker = new Worker(
     }
 
     const summary = await buildExecutiveSummary({
-      periodLabel: "Últimos 7 dias",
+      periodLabel: "Ultimos 7 dias",
       highlights,
       risks,
       actions,
@@ -207,7 +208,7 @@ const insightsWorker = new Worker(
         workspaceId: data.workspaceId,
         projectId: data.projectId,
         type: InsightType.DAILY_SUMMARY,
-        title: "Resumo inteligente diário",
+        title: "Resumo inteligente diario",
         summary,
         periodStart: rangeStart,
         periodEnd: new Date(),
@@ -228,7 +229,28 @@ const insightsWorker = new Worker(
 
 metaWorker.on("completed", (job) => logger.info({ jobId: job.id }, "Meta sync finalizado"));
 metaWorker.on("failed", (job, error) => logger.error({ jobId: job?.id, error }, "Meta sync falhou"));
-insightsWorker.on("completed", (job) => logger.info({ jobId: job.id }, "Insights diários finalizados"));
-insightsWorker.on("failed", (job, error) => logger.error({ jobId: job?.id, error }, "Insights diários falharam"));
+insightsWorker.on("completed", (job) => logger.info({ jobId: job.id }, "Insights diarios finalizados"));
+insightsWorker.on("failed", (job, error) => logger.error({ jobId: job?.id, error }, "Insights diarios falharam"));
 
 logger.info("Workers iniciados: meta-sync e insights-daily");
+
+const AUTOMATION_CHECK_INTERVAL_MS = 60 * 1000;
+
+async function runAutomationTick() {
+  try {
+    const result = await runDueCampaignAutomations();
+    if (result.executed > 0) {
+      logger.info({ executed: result.executed, recommendations: result.recommendations }, "Automacoes de campanha executadas");
+    }
+  } catch (error) {
+    logger.error({ error }, "Falha no tick de automacoes");
+  }
+}
+
+void runAutomationTick();
+setInterval(() => {
+  void runAutomationTick();
+}, AUTOMATION_CHECK_INTERVAL_MS);
+
+
+

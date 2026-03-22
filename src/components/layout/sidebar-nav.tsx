@@ -27,7 +27,7 @@ const sections: NavSection[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
       { href: "/links", label: "Links", icon: Link2 },
-      { href: "/optimizations", label: "Otimizacoes", icon: Sparkles, tag: "IA" },
+      { href: "/campaigns", label: "Campanhas", icon: Sparkles, tag: "AUTO" },
     ],
   },
   {
@@ -115,11 +115,12 @@ export function SidebarNav() {
         <div className="mt-3 grid grid-cols-3 gap-2">
           <Link href="/dashboard" className={cn("rounded-lg border px-2 py-2 text-center text-xs", isActivePath(pathname, "/dashboard") ? "border-cyan-400/50 bg-cyan-400/10 text-cyan-200" : "border-zinc-800 bg-zinc-900 text-zinc-300")}>Dashboard</Link>
           <Link href="/links" className={cn("rounded-lg border px-2 py-2 text-center text-xs", isActivePath(pathname, "/links") ? "border-cyan-400/50 bg-cyan-400/10 text-cyan-200" : "border-zinc-800 bg-zinc-900 text-zinc-300")}>Links</Link>
-          <Link href="/optimizations" className={cn("rounded-lg border px-2 py-2 text-center text-xs", isActivePath(pathname, "/optimizations") ? "border-cyan-400/50 bg-cyan-400/10 text-cyan-200" : "border-zinc-800 bg-zinc-900 text-zinc-300")}>IA</Link>
+          <Link href="/campaigns" className={cn("rounded-lg border px-2 py-2 text-center text-xs", isActivePath(pathname, "/campaigns") ? "border-cyan-400/50 bg-cyan-400/10 text-cyan-200" : "border-zinc-800 bg-zinc-900 text-zinc-300")}>Campanhas</Link>
         </div>
       </div>
     </>
   );
 }
+
 
 

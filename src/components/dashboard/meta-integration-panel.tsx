@@ -39,7 +39,7 @@ function todayMinus(days: number) {
   return base.toISOString().slice(0, 10);
 }
 
-export function MetaIntegrationPanel({ projectId, projectName }: { projectId: string; projectName: string }) {
+export function MetaIntegrationPanel({ projectId, projectName, workspaceId }: { projectId: string; projectName: string; workspaceId: string }) {
   const [data, setData] = useState<IntegrationResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -322,6 +322,18 @@ export function MetaIntegrationPanel({ projectId, projectName }: { projectId: st
           </div>
         )}
       </Card>
+      <Card>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.2em] text-zinc-300">Tracking de vendas (Webhook)</h2>
+        <p className="mt-3 text-sm text-zinc-400">
+          Endpoint para plataformas de checkout enviarem vendas e atualizar conversao real automaticamente.
+        </p>
+        <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 text-xs text-zinc-300">
+          <p>POST <span className="font-mono">/api/webhooks/events</span></p>
+          <p className="mt-1">Header obrigatorio: <span className="font-mono">x-workspace-id: {workspaceId}</span></p>
+          <p className="mt-1">Body minimo: <span className="font-mono">projectId, orderId, amount, status</span></p>
+        </div>
+      </Card>
     </div>
   );
 }
+
