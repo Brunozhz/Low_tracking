@@ -1,15 +1,8 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 
-import { UserMenu } from "@/components/layout/user-menu";
+import { SidebarNav } from "@/components/layout/sidebar-nav";
 import { authOptions } from "@/lib/auth";
-
-const navItems = [
-  { href: "/dashboard", label: "Dashboard" },
-  { href: "/links", label: "Links" },
-  { href: "/optimizations", label: "Otimizacoes" },
-];
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -19,25 +12,14 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-zinc-800 bg-zinc-950/85 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-cyan-300">Low Tracking</p>
-            <p className="text-sm text-zinc-300">Operation Control Center</p>
-          </div>
-          <nav className="flex items-center gap-4 text-sm">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} className="text-zinc-300 transition hover:text-cyan-300">
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <UserMenu />
+    <div className="min-h-screen bg-zinc-950">
+      <div className="flex min-h-screen">
+        <SidebarNav />
+
+        <div className="flex min-h-screen flex-1 flex-col">
+          <main className="flex-1 px-4 py-6 md:px-6 lg:px-8 lg:py-8">{children}</main>
         </div>
-      </header>
-      <main className="mx-auto w-full max-w-7xl px-6 py-8">{children}</main>
+      </div>
     </div>
   );
 }
-

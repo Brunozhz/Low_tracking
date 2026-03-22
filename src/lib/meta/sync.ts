@@ -1,4 +1,4 @@
-﻿import { MetricGranularity, SyncEntity, SyncStatus } from "@prisma/client";
+import { MetricGranularity, SyncEntity, SyncStatus } from "@prisma/client";
 
 import { db } from "@/lib/db";
 import { logger } from "@/lib/logger";
@@ -39,6 +39,22 @@ export async function syncMetaInsightsByAdAccount(input: {
   });
 
   try {
+    const adAccount = await db.adAccount.findFirst({
+      where: {
+        id: input.adAccountId,
+        projectId: input.projectId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        externalId: true,
+      },
+    });
+
+    if (!adAccount) {
+      throw new Error("Conta de anuncios nao encontrada no projeto.");
+    }
+
     const integration = await db.integration.findFirst({
       where: {
         workspaceId: input.workspaceId,
@@ -49,13 +65,13 @@ export async function syncMetaInsightsByAdAccount(input: {
     });
 
     if (!integration?.accessTokenEncrypted) {
-      throw new Error("Integração Meta Ads não encontrada ou sem token.");
+      throw new Error("Integracao Meta Ads nao encontrada ou sem token.");
     }
 
     const client = new MetaAdsClient(integration.accessTokenEncrypted);
 
     const data = await client.fetchInsights({
-      adAccountId: input.adAccountId,
+      adAccountId: adAccount.externalId,
       since: input.rangeStart.toISOString().slice(0, 10),
       until: input.rangeEnd.toISOString().slice(0, 10),
     });
@@ -139,7 +155,7 @@ export async function syncMetaInsightsByAdAccount(input: {
 
     return { read: data.length, written };
   } catch (error) {
-    logger.error({ error }, "Erro na sincronização Meta");
+    logger.error({ error }, "Erro na sincronizacao Meta");
 
     await db.syncLog.update({
       where: { id: syncLog.id },
@@ -153,4 +169,3 @@ export async function syncMetaInsightsByAdAccount(input: {
     throw error;
   }
 }
-
